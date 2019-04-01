@@ -58,14 +58,15 @@ void setup(void)
     Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
     while(1);
     }
-    accel.setRange(ADXL345_RANGE_8_G);
+    accel.setRange(ADXL345_RANGE_16_G);
+    accel.setDataRate(ADXL345_DATARATE_1600_HZ);
 
     servo.attach(9);
 
     myPID.SetOutputLimits(0, 180);
     myPID.SetMode(AUTOMATIC);
 
-    //displaySensorDetails();
+    displaySensorDetails();
 }
 
 void loop(void)
@@ -78,14 +79,18 @@ void loop(void)
     sensors_event_t event;
     accel.getEvent(&event);
 
-    roll = atan2(event.acceleration.y , event.acceleration.z) * 57.3;
-    pitch = atan2((- event.acceleration.x) , sqrt(event.acceleration.y * event.acceleration.y + event.acceleration.z * event.acceleration.z)) * 57.3;
+    // roll = atan2(event.acceleration.y , event.acceleration.z) * 57.3;
+    // pitch = atan2((- event.acceleration.x) , sqrt(event.acceleration.y * event.acceleration.y + event.acceleration.z * event.acceleration.z)) * 57.3;
+    Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
+    Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
+    Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.println("m/s^2 ");
+    delay(500);
 
-    old_value = -pitch + 90;
-    new_value = A*old_value + B*new_value;
-    //mapped_value = map(new_value, 0, 180, 0, 160);
-    Input = new_value;
-    myPID.Compute();
+    // old_value = -pitch + 90;
+    // new_value = A*old_value + B*new_value;
+    // //mapped_value = map(new_value, 0, 180, 0, 160);
+    // Input = new_value;
+    // myPID.Compute();
 
     // servo_actual_val = constrain(map(Output, 0, 180, 0, 160), 0, 180);
     // servo.write(servo_actual_val);
@@ -98,10 +103,10 @@ void loop(void)
 
     // servo.write(constrain(mapped_value, 0, 180));
 
-    Serial.print(new_value); //de la senzor
-    Serial.print(" ");
-    Serial.print(servo_val);
-    Serial.print("\n");
+    // Serial.print(new_value); //de la senzor
+    // Serial.print(" ");
+    // Serial.print(servo_val);
+    // Serial.print("\n");
 
     //delay(10);
 }
