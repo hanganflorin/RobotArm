@@ -35,7 +35,7 @@ void loop() {
   //servo_val3 = (servo_val1 + servo_val2) - 90;
 
   Serial.print(servo_val1);
-  Serial.print("hello from the other side");
+  Serial.print(" ");
   Serial.print(servo_val2);
   Serial.print(" ");
   Serial.print(servo_val3);
@@ -45,7 +45,12 @@ void loop() {
   servo_actual_val2 = constrain(map(servo_val2, 0, 180, 0, 160), 0, 180);
   servo_actual_val3 = constrain(map(servo_val3, 0, 180, 0, 160), 0, 180);
 
-  myservo1.write(servo_actual_val1);
-  myservo2.write(servo_actual_val2);
-  myservo3.write(servo_actual_val3);
+  // myservo1.write(servo_actual_val1);
+  // myservo2.write(servo_actual_val2);
+  // myservo3.write(servo_actual_val3);
+
+  myservo1.write(servo_val1);
+  myservo2.write(servo_val2);
+  myservo3.write(servo_val3);
+
 }

@@ -4,17 +4,20 @@
 #include <Adafruit_ADXL345_U.h>
 #include <Servo.h>
 #include <PID_v1.h>
+#include "adxl345Sensor.h"
 
-double Setpoint = 90, Input, Output;
+
+double Setpoint = 90, Input, Output = 90;
 //Define the aggressive and conservative Tuning Parameters
 // double aggKp=4, aggKi=0.2, aggKd=1;
-double Kp=1, Ki=2, Kd=0;
+double Kp=0.6, Ki=10, Kd=0;
 
 //Specify the links and initial tuning parameters
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
 
-Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
+//Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
+adxl345Sensor adxl = adxl345Sensor();
 Servo servo;
 
 int POTPIN = A0;
@@ -34,66 +37,71 @@ int increment = 2;
 int roll = 0;
 int pitch = 0;
 
-void displaySensorDetails(void)
-{
-    sensor_t sensor;
-    accel.getSensor(&sensor);
-    Serial.println("------------------------------------");
-    Serial.print  ("Sensor:       "); Serial.println(sensor.name);
-    Serial.print  ("Driver Ver:   "); Serial.println(sensor.version);
-    Serial.print  ("Unique ID:    "); Serial.println(sensor.sensor_id);
-    Serial.print  ("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" m/s^2");
-    Serial.print  ("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" m/s^2");
-    Serial.print  ("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" m/s^2");
-    Serial.println("------------------------------------");
-    Serial.println("");
-    delay(500);
-}
+// void displaySensorDetails(void)
+// {
+//     sensor_t sensor;
+//     accel.getSensor(&sensor);
+//     Serial.println("------------------------------------");
+//     Serial.print  ("Sensor:       "); Serial.println(sensor.name);
+//     Serial.print  ("Driver Ver:   "); Serial.println(sensor.version);
+//     Serial.print  ("Unique ID:    "); Serial.println(sensor.sensor_id);
+//     Serial.print  ("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" m/s^2");
+//     Serial.print  ("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" m/s^2");
+//     Serial.print  ("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" m/s^2");
+//     Serial.println("------------------------------------");
+//     Serial.println("");
+//     delay(500);
+// }
 
 void setup(void)
 {
     Serial.begin(9600);
-    if(!accel.begin())
-    {
-    Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
-    while(1);
-    }
-    accel.setRange(ADXL345_RANGE_16_G);
-    accel.setDataRate(ADXL345_DATARATE_1600_HZ);
+    adxl.init();
+    // if(!accel.begin())
+    // {
+    // Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
+    // while(1);
+    // }
+    // accel.setRange(ADXL345_RANGE_16_G);
+    // accel.setDataRate(ADXL345_DATARATE_1600_HZ);
 
     servo.attach(9);
 
     myPID.SetOutputLimits(0, 180);
     myPID.SetMode(AUTOMATIC);
+    myPID.SetSampleTime(10);
 
-    displaySensorDetails();
+    //displaySensorDetails();
 }
 
 void loop(void)
 {
-    servo_val = analogRead(POTPIN);
-    servo_val = map(servo_val, 0, 1023, 0, 180);
-    servo_actual_val = constrain(map(servo_val, 0, 180, 0, 160), 0, 180);
-    servo.write(servo_actual_val);
+    // servo_val = analogRead(POTPIN);
+    // servo_val = map(servo_val, 0, 1023, 0, 180);
+    // servo_actual_val = constrain(map(servo_val, 0, 180, 0, 160), 0, 180);
+    // servo.write(servo_actual_val);
 
-    sensors_event_t event;
-    accel.getEvent(&event);
+    //Serial.println("SALUT");
+    // Serial.println(adxl.GetPitch());
 
-    // roll = atan2(event.acceleration.y , event.acceleration.z) * 57.3;
-    // pitch = atan2((- event.acceleration.x) , sqrt(event.acceleration.y * event.acceleration.y + event.acceleration.z * event.acceleration.z)) * 57.3;
-    Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
-    Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
-    Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.println("m/s^2 ");
-    delay(500);
+    // sensors_event_t event;
+    // accel.getEvent(&event);
+    //
+    // // roll = atan2(event.acceleration.y , event.acceleration.z) * 57.3;
+    // // pitch = atan2((- event.acceleration.x) , sqrt(event.acceleration.y * event.acceleration.y + event.acceleration.z * event.acceleration.z)) * 57.3;
+    // Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
+    // Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
+    // Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.println("m/s^2 ");
+    // delay(500);
 
     // old_value = -pitch + 90;
     // new_value = A*old_value + B*new_value;
     // //mapped_value = map(new_value, 0, 180, 0, 160);
-    // Input = new_value;
-    // myPID.Compute();
+    Input = 180 - adxl.GetPitch();
+    //myPID.Compute();
 
-    // servo_actual_val = constrain(map(Output, 0, 180, 0, 160), 0, 180);
-    // servo.write(servo_actual_val);
+     servo_actual_val = constrain(map(Input, 0, 180, 0, 160), 0, 180);
+     servo.write(servo_actual_val);
 
 
     // if ( mapped_value <= desired - error && servo_val < 180 )
@@ -103,10 +111,10 @@ void loop(void)
 
     // servo.write(constrain(mapped_value, 0, 180));
 
-    // Serial.print(new_value); //de la senzor
-    // Serial.print(" ");
-    // Serial.print(servo_val);
-    // Serial.print("\n");
+    Serial.print(Input);
+    Serial.print(" ");
+    Serial.print(Output);
+    Serial.print("\n");
 
     //delay(10);
 }

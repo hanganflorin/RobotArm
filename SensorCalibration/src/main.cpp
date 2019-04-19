@@ -55,7 +55,7 @@ float yawF = 0;
 #define gainY     1.1
 #define gainZ     1.005
 
-#define ALPHA     0.15
+#define ALPHA     0.2
 
 /******************** SETUP ********************/
 /*          Configure ADXL345 Settings         */
@@ -125,24 +125,41 @@ void loop()
   // Serial.println(accZ);
 
   roll = atan2(accY , sqrt(accX * accX + accZ * accZ)) * 57.2957795131;
-  pitch = atan2(accX , sqrt(accY * accY + accZ * accZ)) * 57.2957795131;
+  pitch = 90 + atan2(accX , sqrt(accY * accY + accZ * accZ)) * 57.2957795131;
   yaw = atan2(sqrt(accX * accX + accY * accY), accZ) * 57.2957795131;
+
+
+  char signx = x < 0 ? '-' : '+';
+  char signy = y < 0 ? '-' : '+';
+  char signz = z < 0 ? '-' : '+';
+
+  if ( z < 0 )
+    pitch = 360 - pitch;
 
   rollF = ALPHA * roll + (1.00 - ALPHA) * rollF;
   pitchF = ALPHA * pitch + (1.00 - ALPHA) * pitchF;
   yawF = ALPHA * yaw + (1.00 - ALPHA) * yawF;
 
+
   // Serial.print(pitch);
   // Serial.print(" ");
   // Serial.print(roll);
   // Serial.print(" ");
-  // Serial.println(yaw);
+  // Serial.print(yaw);
+  // Serial.print(" ");
+  // Serial.print(signx);
+  // Serial.print(" ");
+  // Serial.print(signy);
+  // Serial.print(" ");
+  // Serial.println(signz);
+  //Serial.print(" ");
 
   Serial.print(rollF);
   Serial.print("/");
   Serial.print(pitchF);
   Serial.print("/");
   Serial.println(yawF);
+
 
 
   // Serial.print("New Calibrated Values: "); Serial.print(accX); Serial.print("  "); Serial.print(accY); Serial.print("  "); Serial.print(accZ);
