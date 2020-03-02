@@ -3,7 +3,7 @@ import Slider from '@material-ui/lab/Slider';
 
 import './styles/SimpleSlider.css'
 
-class SimpleSlider extends React.Component {
+class SimpleSlider2 extends React.Component {
     constructor(props) {
         super(props);
 
@@ -11,7 +11,7 @@ class SimpleSlider extends React.Component {
             value: 0,
         };
 
-        this.handleChange = this.handleChange.bind(this);
+        //this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount() {
@@ -21,7 +21,7 @@ class SimpleSlider extends React.Component {
     }
 
     render() {
-        const {value} = this.state;
+        const {value} = this.props;
 
         return (
             <div className="sliderContainer">
@@ -32,21 +32,20 @@ class SimpleSlider extends React.Component {
                     max={180}
                     step={1}
                     aria-labelledby="label"
-                    onChange={this.handleChange}
+                    //onChange={this.handleChange}
                 />
                 <h1>{this.props.code} {value}</h1>
             </div>
         );
     }
 
-    handleChange(event, value) {
-        const {socket, code} = this.props;
-        this.setState({value});
-        socket.send(code+value);
-        //fetch('http://192.168.43.249/api/servo?value=' + value, {'mode': 'no-cors'});
-    }
+    // handleChange(event, value) {
+    //     const {socket, code} = this.props;
+    //     this.setState({value});
+    //     socket.send(code+value);
+    //     //fetch('http://192.168.43.249/api/servo?value=' + value, {'mode': 'no-cors'});
+    // }
 
 }
 
-export default SimpleSlider
-;
+export default SimpleSlider2;
